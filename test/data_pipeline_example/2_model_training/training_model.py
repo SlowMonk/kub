@@ -15,6 +15,9 @@ from torch.autograd import Variable
 import numpy as np 
 import json 
 
+import kfp
+import kfp.dsl as dsl
+
 def load_data(data):
 
     d = StringIO(data)
