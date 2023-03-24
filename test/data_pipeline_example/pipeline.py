@@ -3,12 +3,40 @@ import kfp.components as comp
 from kfp import dsl
 from connect_to_kube import connect_to_kube
 
+
+_CONTAINER_MANIFEST = """
+{
+    "apiVersion": "batch/v1",
+    "kind": "Job",
+    "metadata": {
+        "generateName": "resourceop-basic-job-"
+    },
+    "spec": {
+        "template": {
+            "metadata": {
+                "name": "resource-basic"
+            },
+            "spec": {
+                "containers": [{
+                    "name": "sample-container",
+                    "image": "k8s.gcr.io/busybox",
+                    "command": ["/usr/bin/env"]
+                }],
+                "restartPolicy": "Never"
+            }
+        },
+        "backoffLimit": 4      
+    }
+}
+"""
+
 def logg_env_function():
   import os
   import logging
   logging.basicConfig(level=logging.INFO)
   env_variable = os.getenv('example_env')
   logging.info('The environment variable is: {}'.format(env_variable))
+
 
 client = connect_to_kube()
 TEST_COMPONENT_PATH = "Table"
