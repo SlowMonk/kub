@@ -59,7 +59,14 @@ if __name__ == "__main__":
         help="Input data csv"
     )
 
+    argument_parser.add_argument(
+        '--meta',
+        type=str, 
+        help="Input data csv"
+    )
+
     args = argument_parser.parse_args()
+    print("args_meta->", args.meta)
     iris = args.data
     iris = load_data(iris)
 
@@ -70,7 +77,7 @@ if __name__ == "__main__":
     # predict = model.predict(X_test)
     # print('\nAccuracy Score on test data : ')
     # print(accuracy_score(y_test, predict))
-    model = Model(X_train.shape[1])
+    model = Model(X_train.shape[1]).cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     loss_fn =  torch.nn.CrossEntropyLoss()
     model
@@ -78,10 +85,10 @@ if __name__ == "__main__":
     import tqdm
 
     EPOCHS  = 100000000
-    X_train = Variable(torch.from_numpy(X_train)).float()
-    y_train = Variable(torch.from_numpy(y_train)).long()
-    X_test  = Variable(torch.from_numpy(X_test)).float()
-    y_test  = Variable(torch.from_numpy(y_test)).long()
+    X_train = Variable(torch.from_numpy(X_train)).float().cuda()
+    y_train = Variable(torch.from_numpy(y_train)).long().cuda()
+    X_test  = Variable(torch.from_numpy(X_test)).float().cuda()
+    y_test  = Variable(torch.from_numpy(y_test)).long().cuda()
 
     loss_list     = np.zeros((EPOCHS,))
     accuracy_list = np.zeros((EPOCHS,))
@@ -101,8 +108,8 @@ if __name__ == "__main__":
                 y_pred = model(X_test)
                 correct = (torch.argmax(y_pred, dim=1) == y_test).type(torch.FloatTensor)
                 accuracy_list[epoch] = correct.mean()
-                print(f'args_name: {args.name} Epoch[{epoch}] : loss:{loss},  Accuracy:{correct.mean()}')
-                print(f'args_name : {args.name} Epoch[{int(epoch)}] : loss:{float(loss)},  Accuracy:{correct.mean()}')
-                d = {'Deep_learning_Epoch': int(epoch), 'loss': float(loss)}
+                #print(f'args_name: {args.name} Epoch[{epoch}] : loss:{loss},  Accuracy:{correct.mean()}')
+                print(f'ID: {str(args.meta)} args_name : {args.name} Epoch[{int(epoch)}] : loss:{float(loss)},  Accuracy:{correct.mean()}')
+                d = {'ID': str(args.meta), 'Deep_learning_Epoch': int(epoch), 'loss': float(loss)}
                 print(json.dumps(d))
 

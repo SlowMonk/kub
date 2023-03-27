@@ -1,1 +1,4 @@
 test/data_pipeline_example/config/.env
+test/*json
+test/*yaml
+test/*.zip
